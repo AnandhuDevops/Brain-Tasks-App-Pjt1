@@ -26,6 +26,8 @@ phases:
       - docker push $DOCKERHUB_USERNAME/brain-tasks-app:latest
       - echo "Update kubeconfig..."
       - aws eks update-kubeconfig --name brain-tasks-cluster --region $AWS_DEFAULT_REGION
+      - echo "Verify connection to cluster..."
+      - kubectl get nodes
       - echo "Deploy to EKS..."
       - kubectl apply -f deployment.yaml
       - kubectl apply -f service.yaml
