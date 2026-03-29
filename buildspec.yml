@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    DOCKERHUB_USERNAME: "<your-dockerhub-username>"
-    DOCKERHUB_PASSWORD: "<your-dockerhub-access-token>"
+    DOCKERHUB_USERNAME: "anandhudevops1"
+    DOCKERHUB_PASSWORD: "Career.6522"
 
 phases:
   pre_build:
