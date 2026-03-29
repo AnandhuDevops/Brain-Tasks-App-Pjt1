@@ -4,23 +4,29 @@ env:
   variables:
     DOCKERHUB_USERNAME: "anandhudevops1"
     DOCKERHUB_PASSWORD: "Career.6522"
+    AWS_DEFAULT_REGION: "us-west-1"
 
 phases:
   pre_build:
     commands:
-      - echo "Logging in to DockerHub..."
+      - echo "Install kubectl..."
+      - curl -LO https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl
+      - chmod +x kubectl
+      - mv kubectl /usr/local/bin/
+      - echo "Login to DockerHub..."
       - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
   build:
     commands:
-      - echo "Building Docker image..."
+      - echo "Build Docker image..."
       - docker build -t brain-tasks-app .
       - docker tag brain-tasks-app $DOCKERHUB_USERNAME/brain-tasks-app:latest
   post_build:
     commands:
-      - echo "Pushing Docker image..."
+      - echo "Push Docker image..."
       - docker push $DOCKERHUB_USERNAME/brain-tasks-app:latest
-      - echo "Deploying to EKS cluster..."
-      - aws eks --region us-west-1 update-kubeconfig --name brain-tasks-cluster
+      - echo "Update kubeconfig..."
+      - aws eks update-kubeconfig --name brain-tasks-cluster --region $AWS_DEFAULT_REGION
+      - echo "Deploy to EKS..."
       - kubectl apply -f deployment.yaml
       - kubectl apply -f service.yaml
 
