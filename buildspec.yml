@@ -1,18 +1,28 @@
 version: 0.2
 
+env:
+  variables:
+    DOCKERHUB_USERNAME: "<your-dockerhub-username>"
+    DOCKERHUB_PASSWORD: "<your-dockerhub-access-token>"
+
 phases:
   pre_build:
     commands:
-      - echo Logging in to DockerHub...
+      - echo "Logging in to DockerHub..."
       - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
   build:
     commands:
-      - echo Building Docker image...
+      - echo "Building Docker image..."
       - docker build -t brain-tasks-app .
-      - docker tag brain-tasks-app anandhudevops1/brain-tasks-app:latest
+      - docker tag brain-tasks-app $DOCKERHUB_USERNAME/brain-tasks-app:latest
   post_build:
     commands:
-      - echo Pushing Docker image...
-      - docker push anandhudevops1/brain-tasks-app:latest
+      - echo "Pushing Docker image..."
+      - docker push $DOCKERHUB_USERNAME/brain-tasks-app:latest
+      - echo "Deploying to EKS cluster..."
+      - aws eks --region us-west-1 update-kubeconfig --name brain-tasks-cluster
+      - kubectl apply -f deployment.yaml
+      - kubectl apply -f service.yaml
+
 artifacts:
   files: []
